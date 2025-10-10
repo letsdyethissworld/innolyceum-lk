@@ -36,7 +36,8 @@
   },
   {
   "scripts": {
-    "build": "react-scripts build",
+    "dev": "vite",
+    "build": "vite build"
     "start": "serve -s build -l $PORT"
   }
 }
