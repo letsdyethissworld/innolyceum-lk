@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { User, Applicant, ApplicantFormData, Document } from '../types';
 
-const API_BASE_URL = 'http://localhost:8000'; // FastAPI backend URL
+const API_BASE_URL = 'innolyceum-lk-back.up.railway.app'; // FastAPI backend URL
 
 const api = axios.create({
   baseURL: API_BASE_URL,
