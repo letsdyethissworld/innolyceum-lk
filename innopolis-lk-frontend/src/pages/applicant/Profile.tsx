@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { applicantAPI } from '../../services/api';
+import regionsData from '../../../data/regions.json';
 import styles from './Profile.module.css';
-
-// Temporary regions data - create this file or replace with actual import
-const regionsData = {
-  regions: [
-    "Республика Татарстан",
-    "Москва",
-    "Московская область",
-    "Санкт-Петербург",
-    "Другой регион"
-  ]
-};
 
 interface ParentData {
   first_name: string;
