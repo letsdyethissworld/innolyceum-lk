@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build": "vite build"
-    "start": "serve -s build -l $PORT",
+    "start": "vite preview"
     "dev": "vite"
   },
   "dependencies": {
