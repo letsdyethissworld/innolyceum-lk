@@ -7,6 +7,6 @@ export default defineConfig({
   server : {
     host: '0.0.0.0', // Это заставит сервер разработки слушать только localhost
     port: 8080,
-    preview.allowedHosts: ['innolk.up.railway.app'],
+    allowedHosts: ['innolk.up.railway.app'],
   }
 })
