@@ -1,9 +1,17 @@
 FROM node:18-alpine
+
 WORKDIR /app
-# Копируем оба файла, управляющие зависимостями
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+
+# Копируем package.json
+COPY package.json ./
+
+# Заменяем npm ci на npm install
+RUN npm install --omit=dev
+
+# Копируем исходный код
 COPY . .
+
+# Собираем приложение
 RUN npm run build
 
 # Устанавливаем serve для статических файлов
