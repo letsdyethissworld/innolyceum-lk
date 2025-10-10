@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, File, X, Send } from 'lucide-react';
-import { applicantAPI } from 'C:/Developer/2025/InnoHackathon/innopolis-lk-frontend/src/services/api.ts';
+import { applicantAPI } from '../../services/api.ts';
 import styles from './DocumentUpload.module.css';
 
 interface DocumentType {
