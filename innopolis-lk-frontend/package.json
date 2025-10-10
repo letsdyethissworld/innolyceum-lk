@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "build": "react-scripts build",
+    "build": "vite build"
     "start": "serve -s build -l $PORT",
-    "dev": "react-scripts start"
+    "dev": "vite"
   },
   "dependencies": {
     "serve": "^14.0.0"
