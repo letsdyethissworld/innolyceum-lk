@@ -167,10 +167,9 @@ const DocumentUpload: React.FC = () => {
     try {
       const formData = new FormData();
   
-      // ВАЖНО: Используем правильные имена полей, которые ожидает бэкенд
+      // ВАЖНО: Правильные имена полей для бэкенда
       uploadedFiles.forEach(uploadedFile => {
         if (uploadedFile.fieldName === 'achievements') {
-          // achievements - это массив файлов, используем одно и то же имя
           formData.append('achievements', uploadedFile.file);
         } else if (uploadedFile.fieldName === 'motivation_letter') {
           formData.append('motivation_letter', uploadedFile.file);
@@ -185,7 +184,11 @@ const DocumentUpload: React.FC = () => {
   
       console.log('Sending FormData with files:');
       for (let [key, value] of formData.entries()) {
-        console.log(key, value instanceof File ? value.name : value);
+        if (value instanceof File) {
+          console.log(key, value.name, value.size, value.type);
+        } else {
+          console.log(key, value);
+        }
       }
   
       await applicantAPI.submitEnrollment(formData);
@@ -195,10 +198,23 @@ const DocumentUpload: React.FC = () => {
       setTimeout(() => setSuccess(''), 5000);
     } catch (error: any) {
       console.error('Full error details:', error);
-      const errorMessage = error.response?.data?.detail || 
-                          error.response?.data?.message || 
-                          'Ошибка отправки документов';
-      setError(errorMessage);
+      const errorDetails = error.response?.data;
+      
+      if (errorDetails && typeof errorDetails === 'object') {
+        // Если бэкенд вернул детальную информацию об ошибке
+        if (errorDetails.detail) {
+          setError(`Ошибка: ${errorDetails.detail}`);
+        } else if (errorDetails.errors) {
+          const errorMessages = errorDetails.errors.map((err: any) => 
+            `${err.field}: ${err.message}`
+          ).join(', ');
+          setError(`Ошибки валидации: ${errorMessages}`);
+        } else {
+          setError('Неизвестная ошибка сервера');
+        }
+      } else {
+        setError(error.response?.data?.detail || 'Ошибка отправки документов');
+      }
     } finally {
       setIsSubmitting(false);
     }
