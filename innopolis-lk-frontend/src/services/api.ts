@@ -33,6 +33,12 @@ api.interceptors.response.use(
       localStorage.removeItem('currentUser');
       window.location.href = '/login';
     }
+    
+    // Детальное логирование ошибок 422
+    if (error.response?.status === 422) {
+      console.error('Validation Error Details:', error.response.data);
+    }
+    
     return Promise.reject(error);
   }
 );
