@@ -1,12 +1,14 @@
+# Используем официальный Node.js образ
 FROM node:18-alpine
 
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем package.json
-COPY package.json ./
+# Копируем package.json и package-lock.json
+COPY package*.json ./
 
-# Заменяем npm ci на npm install
-RUN npm install --omit=dev
+# Устанавливаем зависимости (ВКЛЮЧАЯ devDependencies)
+RUN npm ci
 
 # Копируем исходный код
 COPY . .
