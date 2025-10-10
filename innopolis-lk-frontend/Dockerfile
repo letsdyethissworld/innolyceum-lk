@@ -15,18 +15,14 @@ COPY . .
 RUN npm run build
 
 # Production образ
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Устанавливаем serve для статических файлов
-RUN npm install -g serve
+FROM nginx:alpine
 
 # Копируем собранное приложение
-COPY --from=builder /app/build ./build
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Указываем порт
-EXPOSE 3000
+# Копируем nginx конфиг
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Запускаем сервер
-CMD ["serve", "-s", "build", "-l", "3000"]
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
