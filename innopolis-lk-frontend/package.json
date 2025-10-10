@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "npx serve dist/ -p $PORT --listen 0.0.0.0"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.3.1",
