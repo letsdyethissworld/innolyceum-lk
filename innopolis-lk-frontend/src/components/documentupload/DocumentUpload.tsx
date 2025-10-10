@@ -72,12 +72,21 @@ const DocumentUpload: React.FC = () => {
       const profile = await applicantAPI.getProfile();
       if (profile && profile.class_number) {
         setUserClass(profile.class_number);
+      } else {
+        // Если класс не указан, используем значение по умолчанию
+        setUserClass(6);
       }
-    } catch (error) {
-      console.error('Failed to load profile:', error);
+    } catch (error: any) {
+      // Если профиль не найден (404) - это нормально, используем значение по умолчанию
+      if (error.response?.status === 404) {
+        console.log('Profile not found, using default class: 6');
+        setUserClass(6);
+      } else {
+        console.error('Failed to load profile:', error);
+      }
     }
   };
-
+  
   const handleFileSelect = (type: string, fieldName: string, files: FileList): void => {
     setError('');
     
