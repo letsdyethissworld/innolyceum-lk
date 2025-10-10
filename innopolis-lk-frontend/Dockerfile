@@ -1,19 +1,9 @@
-# Используем официальный Node.js образ
 FROM node:18-alpine
-
-# Устанавливаем рабочую директорию
 WORKDIR /app
-
-# Копируем package.json и package-lock.json
-COPY package*.json ./
-
-# Устанавливаем зависимости
+# Копируем оба файла, управляющие зависимостями
+COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
-
-# Копируем исходный код
 COPY . .
-
-# Собираем приложение
 RUN npm run build
 
 # Устанавливаем serve для статических файлов
