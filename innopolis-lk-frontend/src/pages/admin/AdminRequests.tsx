@@ -13,7 +13,10 @@ interface Request {
     first_name: string;
     last_name: string;
     state: string;
+    city: string;
+    school: string;
     class_number: number;
+    contact_number: string;
   };
 }
 
