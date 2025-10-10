@@ -3,9 +3,9 @@ import { applicantAPI } from '../../services/api';
 import styles from './Status.module.css';
 
 interface ApplicationStatus {
-  status: 'new' | 'in_review' | 'accepted' | 'rejected';
-  message: string;
-  updatedAt: string;
+  status: 'pending' | 'approved' | 'denied' | 'no_request';
+  message?: string;
+  updatedAt?: string;
 }
 
 const Status: React.FC = () => {
@@ -30,10 +30,17 @@ const Status: React.FC = () => {
   };
 
   const statusMessages = {
-    new: 'Ваша заявка получена и ожидает обработки.',
-    in_review: 'Ваши документы находятся на рассмотрении.',
-    accepted: 'Поздравляем! Ваша заявка одобрена.',
-    rejected: 'К сожалению, ваша заявка не одобрена.'
+    pending: 'Ваша заявка получена и ожидает обработки.',
+    approved: 'Поздравляем! Ваша заявка одобрена.',
+    denied: 'К сожалению, ваша заявка не одобрена.',
+    no_request: 'Заявка не подана. Пожалуйста, заполните профиль и загрузите документы.'
+  };
+
+  const statusLabels = {
+    pending: 'На рассмотрении',
+    approved: 'Принята',
+    denied: 'Отклонена',
+    no_request: 'Нет заявки'
   };
 
   if (loading) {
@@ -64,10 +71,7 @@ const Status: React.FC = () => {
         <div className={styles.statusHeader}>
           <h2 className={styles.statusTitle}>Текущий статус</h2>
           <span className={`${styles.statusBadge} ${styles[status.status]}`}>
-            {status.status === 'new' && 'Новая'}
-            {status.status === 'in_review' && 'На рассмотрении'}
-            {status.status === 'accepted' && 'Принята'}
-            {status.status === 'rejected' && 'Отклонена'}
+            {statusLabels[status.status]}
           </span>
         </div>
         
@@ -75,37 +79,56 @@ const Status: React.FC = () => {
           {status.message || statusMessages[status.status]}
         </p>
         
-        {status.updatedAt && (
+        {status.updatedAt && status.status !== 'no_request' && (
           <p className={styles.updateTime}>
-            Обновлено: {new Date(status.updatedAt).toLocaleDateString('ru-RU')}
+            Обновлено: {new Date(status.updatedAt).toLocaleDateString('ru-RU', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
           </p>
         )}
         
-        <div className={styles.timeline}>
-          <div className={`${styles.timelineItem} ${styles.completed}`}>
-            <div className={styles.timelineDot}></div>
-            <div className={styles.timelineContent}>
-              <h3>Заявка подана</h3>
-              <p>Ваша заявка успешно отправлена</p>
+        {status.status !== 'no_request' && (
+          <div className={styles.timeline}>
+            <div className={`${styles.timelineItem} ${styles.completed}`}>
+              <div className={styles.timelineDot}></div>
+              <div className={styles.timelineContent}>
+                <h3>Заявка подана</h3>
+                <p>Ваша заявка успешно отправлена</p>
+              </div>
+            </div>
+            
+            <div className={`${styles.timelineItem} ${
+              status.status !== 'pending' && status.status !== 'no_request' ? styles.completed : ''
+            }`}>
+              <div className={styles.timelineDot}></div>
+              <div className={styles.timelineContent}>
+                <h3>Проверка документов</h3>
+                <p>Документы находятся на проверке</p>
+              </div>
+            </div>
+            
+            <div className={`${styles.timelineItem} ${
+              status.status === 'approved' || status.status === 'denied' ? styles.completed : ''
+            }`}>
+              <div className={styles.timelineDot}></div>
+              <div className={styles.timelineContent}>
+                <h3>Решение принято</h3>
+                <p>По вашей заявке вынесено решение</p>
+              </div>
             </div>
           </div>
-          
-          <div className={`${styles.timelineItem} ${status.status !== 'new' ? styles.completed : ''}`}>
-            <div className={styles.timelineDot}></div>
-            <div className={styles.timelineContent}>
-              <h3>Проверка документов</h3>
-              <p>Документы находятся на проверке</p>
-            </div>
+        )}
+        
+        {status.status === 'no_request' && (
+          <div className={styles.noRequest}>
+            <p>Вы еще не подали заявку на поступление.</p>
+            <p>Пожалуйста, заполните профиль и загрузите необходимые документы.</p>
           </div>
-          
-          <div className={`${styles.timelineItem} ${status.status === 'accepted' || status.status === 'rejected' ? styles.completed : ''}`}>
-            <div className={styles.timelineDot}></div>
-            <div className={styles.timelineContent}>
-              <h3>Решение принято</h3>
-              <p>По вашей заявке вынесено решение</p>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

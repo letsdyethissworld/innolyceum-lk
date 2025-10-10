@@ -1,23 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { ApplicantFormData } from '../../types';
 import { applicantAPI } from '../../services/api';
-import regionsData from 'C:/Developer/2025/InnoHackathon/innopolis-lk-frontend/data/regions.json'
 import styles from './Profile.module.css';
 
+// Temporary regions data - create this file or replace with actual import
+const regionsData = {
+  regions: [
+    "Республика Татарстан",
+    "Москва",
+    "Московская область",
+    "Санкт-Петербург",
+    "Другой регион"
+  ]
+};
+
+interface ParentData {
+  first_name: string;
+  last_name: string;
+  contact_number?: string;
+  email?: string;
+  relation?: string;
+}
+
+interface ProfileFormData {
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  date_of_birth: string;
+  state: string;
+  city: string;
+  school: string;
+  class_number: number;
+  contact_number: string;
+  address?: string;
+  parents: ParentData[];
+}
+
 const Profile: React.FC = () => {
-  const [formData, setFormData] = useState<ApplicantFormData>({
-    lastName: '',
-    firstName: '',
-    middleName: '',
-    birthDate: '',
-    region: '',
+  const [formData, setFormData] = useState<ProfileFormData>({
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    date_of_birth: '',
+    state: '',
     city: '',
     school: '',
-    class: '',
-    phone: '',
-    email: '',
+    class_number: 6,
+    contact_number: '',
     address: '',
-    parentsInfo: ''
+    parents: [{ first_name: '', last_name: '', relation: 'parent' }]
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -32,9 +62,25 @@ const Profile: React.FC = () => {
     try {
       setIsLoading(true);
       const profile = await applicantAPI.getProfile();
-      setFormData(profile);
+      if (profile) {
+        setFormData({
+          first_name: profile.first_name || '',
+          middle_name: profile.middle_name || '',
+          last_name: profile.last_name || '',
+          date_of_birth: profile.date_of_birth || '',
+          state: profile.state || '',
+          city: profile.city || '',
+          school: profile.school || '',
+          class_number: profile.class_number || 6,
+          contact_number: profile.contact_number || '',
+          address: profile.address || '',
+          parents: profile.parents || [{ first_name: '', last_name: '', relation: 'parent' }]
+        });
+      }
     } catch (error: any) {
-      setError('Ошибка загрузки профиля');
+      if (error.response?.status !== 404) {
+        setError('Ошибка загрузки профиля');
+      }
       console.error('Failed to load profile:', error);
     } finally {
       setIsLoading(false);
@@ -51,7 +97,7 @@ const Profile: React.FC = () => {
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (error: any) {
-      setError('Ошибка сохранения профиля');
+      setError(error.response?.data?.detail || 'Ошибка сохранения профиля');
       console.error('Failed to save profile:', error);
     } finally {
       setIsLoading(false);
@@ -68,7 +114,32 @@ const Profile: React.FC = () => {
     }));
   };
 
-  if (isLoading && !formData.email) {
+  const handleParentChange = (index: number, field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      parents: prev.parents.map((parent, i) => 
+        i === index ? { ...parent, [field]: value } : parent
+      )
+    }));
+  };
+
+  const addParent = () => {
+    setFormData(prev => ({
+      ...prev,
+      parents: [...prev.parents, { first_name: '', last_name: '', relation: 'parent' }]
+    }));
+  };
+
+  const removeParent = (index: number) => {
+    if (formData.parents.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        parents: prev.parents.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  if (isLoading && !formData.first_name) {
     return <div className={styles.loading}>Загрузка...</div>;
   }
 
@@ -94,10 +165,10 @@ const Profile: React.FC = () => {
             <label className={styles.label}>Фамилия *</label>
             <input
               type="text"
-              name="lastName"
+              name="last_name"
               required
               className={styles.input}
-              value={formData.lastName}
+              value={formData.last_name}
               onChange={handleChange}
               disabled={isLoading}
             />
@@ -107,10 +178,10 @@ const Profile: React.FC = () => {
             <label className={styles.label}>Имя *</label>
             <input
               type="text"
-              name="firstName"
+              name="first_name"
               required
               className={styles.input}
-              value={formData.firstName}
+              value={formData.first_name}
               onChange={handleChange}
               disabled={isLoading}
             />
@@ -120,9 +191,9 @@ const Profile: React.FC = () => {
             <label className={styles.label}>Отчество</label>
             <input
               type="text"
-              name="middleName"
+              name="middle_name"
               className={styles.input}
-              value={formData.middleName}
+              value={formData.middle_name}
               onChange={handleChange}
               disabled={isLoading}
             />
@@ -132,10 +203,10 @@ const Profile: React.FC = () => {
             <label className={styles.label}>Дата рождения *</label>
             <input
               type="date"
-              name="birthDate"
+              name="date_of_birth"
               required
               className={styles.input}
-              value={formData.birthDate}
+              value={formData.date_of_birth}
               onChange={handleChange}
               disabled={isLoading}
             />
@@ -144,10 +215,10 @@ const Profile: React.FC = () => {
           <div className={styles.formGroup}>
             <label className={styles.label}>Регион *</label>
             <select
-              name="region"
+              name="state"
               required
               className={styles.input}
-              value={formData.region}
+              value={formData.state}
               onChange={handleChange}
               disabled={isLoading}
             >
@@ -187,10 +258,10 @@ const Profile: React.FC = () => {
           <div className={styles.formGroup}>
             <label className={styles.label}>Класс *</label>
             <select
-              name="class"
+              name="class_number"
               required
               className={styles.input}
-              value={formData.class}
+              value={formData.class_number}
               onChange={handleChange}
               disabled={isLoading}
             >
@@ -205,23 +276,10 @@ const Profile: React.FC = () => {
             <label className={styles.label}>Телефон *</label>
             <input
               type="tel"
-              name="phone"
+              name="contact_number"
               required
               className={styles.input}
-              value={formData.phone}
-              onChange={handleChange}
-              disabled={isLoading}
-            />
-          </div>
-          
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Email *</label>
-            <input
-              type="email"
-              name="email"
-              required
-              className={styles.input}
-              value={formData.email}
+              value={formData.contact_number}
               onChange={handleChange}
               disabled={isLoading}
             />
@@ -240,16 +298,96 @@ const Profile: React.FC = () => {
           />
         </div>
         
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Сведения о родителях</label>
-          <textarea
-            name="parentsInfo"
-            rows={3}
-            className={styles.textarea}
-            value={formData.parentsInfo}
-            onChange={handleChange}
+        <div className={styles.parentsSection}>
+          <h3 className={styles.sectionTitle}>Сведения о родителях *</h3>
+          {formData.parents.map((parent, index) => (
+            <div key={index} className={styles.parentCard}>
+              <div className={styles.parentHeader}>
+                <h4>Родитель {index + 1}</h4>
+                {formData.parents.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeParent(index)}
+                    className={styles.removeButton}
+                    disabled={isLoading}
+                  >
+                    Удалить
+                  </button>
+                )}
+              </div>
+              
+              <div className={styles.parentGrid}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Имя *</label>
+                  <input
+                    type="text"
+                    required
+                    className={styles.input}
+                    value={parent.first_name}
+                    onChange={(e) => handleParentChange(index, 'first_name', e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Фамилия *</label>
+                  <input
+                    type="text"
+                    required
+                    className={styles.input}
+                    value={parent.last_name}
+                    onChange={(e) => handleParentChange(index, 'last_name', e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Телефон</label>
+                  <input
+                    type="tel"
+                    className={styles.input}
+                    value={parent.contact_number || ''}
+                    onChange={(e) => handleParentChange(index, 'contact_number', e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Email</label>
+                  <input
+                    type="email"
+                    className={styles.input}
+                    value={parent.email || ''}
+                    onChange={(e) => handleParentChange(index, 'email', e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Родство</label>
+                  <select
+                    className={styles.input}
+                    value={parent.relation || 'parent'}
+                    onChange={(e) => handleParentChange(index, 'relation', e.target.value)}
+                    disabled={isLoading}
+                  >
+                    <option value="parent">Родитель</option>
+                    <option value="guardian">Опекун</option>
+                    <option value="other">Другое</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          <button
+            type="button"
+            onClick={addParent}
+            className={styles.addButton}
             disabled={isLoading}
-          />
+          >
+            + Добавить родителя
+          </button>
         </div>
         
         <div className={styles.actions}>

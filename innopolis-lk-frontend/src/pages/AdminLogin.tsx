@@ -1,35 +1,42 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { adminAPI } from '../services/api';
 import styles from './Login.module.css';
 
-const Login: React.FC = () => {
+const AdminLogin: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   
-  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  useEffect(() => {
+    // Если уже есть admin token, перенаправляем в админку
+    const adminToken = localStorage.getItem('adminToken');
+    if (adminToken) {
+      navigate('/admin');
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
     
     try {
-      await login(formData.email, formData.password);
-      navigate('/applicant');
+      await adminAPI.login(formData.email, formData.password);
+      navigate('/admin');
     } catch (error: any) {
-      setError(error.message);
+      setError(error.response?.data?.detail || 'Ошибка входа');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -41,7 +48,7 @@ const Login: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Вход в личный кабинет</h2>
+          <h2 className={styles.title}>Вход в админ панель</h2>
           <p className={styles.subtitle}>Лицей Иннополис</p>
         </div>
         
@@ -89,21 +96,12 @@ const Login: React.FC = () => {
             className={styles.primaryButton}
             disabled={isLoading}
           >
-            {isLoading ? 'Вход...' : 'Войти'}
+            {isLoading ? 'Вход...' : 'Войти в админку'}
           </button>
-          
-          <div className={styles.linkContainer}>
-            <Link to="/forgot-password" className={styles.link}>
-              Забыли пароль?
-            </Link>
-            <Link to="/register" className={styles.link}>
-              Нет аккаунта? Зарегистрируйтесь
-            </Link>
-          </div>
         </form>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default AdminLogin;
