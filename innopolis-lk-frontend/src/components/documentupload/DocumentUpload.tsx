@@ -136,7 +136,7 @@ const DocumentUpload: React.FC = () => {
     setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
   };
 
-  const handleSubmit = async (): Promise<void> => {
+   const handleSubmit = async (): Promise<void> => {
     setError('');
     setSuccess('');
   
@@ -182,20 +182,22 @@ const DocumentUpload: React.FC = () => {
         }
       });
   
+      // Безопасное логирование FormData
       console.log('Sending FormData with files:');
       try {
-        // Безопасный способ перебора FormData
         const formDataEntries = Array.from(formData.entries());
+        console.log(`Total entries in FormData: ${formDataEntries.length}`);
         formDataEntries.forEach(([key, value]) => {
-          // Проверяем, является ли value объектом File без использования instanceof
-          if (value && typeof value === 'object' && 'name' in value && 'size' in value && 'type' in value) {
-            console.log(`${key}:`, (value as any).name, `(${(value as any).size} bytes, ${(value as any).type})`);
+          // Безопасная проверка на File-like объект
+          if (value && typeof value === 'object' && 'name' in value) {
+            const fileValue = value as any;
+            console.log(`File - ${key}: ${fileValue.name}, size: ${fileValue.size}, type: ${fileValue.type}`);
           } else {
-            console.log(`${key}:`, value);
+            console.log(`Value - ${key}:`, value);
           }
         });
       } catch (logError) {
-        console.log('FormData contains files, but cannot log details due to environment restrictions');
+        console.log('Cannot log FormData details, but proceeding with submission');
       }
   
       await applicantAPI.submitEnrollment(formData);
@@ -204,23 +206,15 @@ const DocumentUpload: React.FC = () => {
       
       setTimeout(() => setSuccess(''), 5000);
     } catch (error: any) {
-      console.error('Full error details:', error);
-      const errorDetails = error.response?.data;
+      console.error('Submission error:', error);
       
-      if (errorDetails && typeof errorDetails === 'object') {
-        // Если бэкенд вернул детальную информацию об ошибке
-        if (errorDetails.detail) {
-          setError(`Ошибка: ${errorDetails.detail}`);
-        } else if (errorDetails.errors) {
-          const errorMessages = errorDetails.errors.map((err: any) => 
-            `${err.field}: ${err.message}`
-          ).join(', ');
-          setError(`Ошибки валидации: ${errorMessages}`);
-        } else {
-          setError('Неизвестная ошибка сервера');
-        }
+      // Упрощенная обработка ошибок
+      if (error.response?.data?.detail) {
+        setError(`Ошибка: ${error.response.data.detail}`);
+      } else if (error.message) {
+        setError(`Ошибка: ${error.message}`);
       } else {
-        setError(error.response?.data?.detail || 'Ошибка отправки документов');
+        setError('Произошла неизвестная ошибка при отправке документов');
       }
     } finally {
       setIsSubmitting(false);
