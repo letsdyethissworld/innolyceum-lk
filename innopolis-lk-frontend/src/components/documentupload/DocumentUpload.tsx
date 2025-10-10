@@ -139,54 +139,66 @@ const DocumentUpload: React.FC = () => {
   const handleSubmit = async (): Promise<void> => {
     setError('');
     setSuccess('');
-
+  
     // Проверка обязательных файлов
     const requiredFiles = documentTypes.filter(doc => doc.required);
     const missingFiles = requiredFiles.filter(doc => 
       !uploadedFiles.some(f => f.fieldName === doc.fieldName)
     );
-
+  
     if (missingFiles.length > 0) {
       setError(`Необходимо загрузить обязательные документы: ${missingFiles.map(doc => doc.label).join(', ')}`);
       return;
     }
-
+  
     // Проверка специальных требований для классов
     if (userClass === 10 && !uploadedFiles.some(f => f.fieldName === 'state_exam_file')) {
       setError('Для 10 класса обязателен протокол результатов ОГЭ');
       return;
     }
-
+  
     if (userClass > 8 && !uploadedFiles.some(f => f.fieldName === 'official_grades_file')) {
       setError('Для классов выше 8 обязательна копия аттестата');
       return;
     }
-
+  
     setIsSubmitting(true);
-
+  
     try {
       const formData = new FormData();
-
-      // Добавляем файлы в FormData
+  
+      // ВАЖНО: Используем правильные имена полей, которые ожидает бэкенд
       uploadedFiles.forEach(uploadedFile => {
         if (uploadedFile.fieldName === 'achievements') {
-          // achievements - это массив файлов
+          // achievements - это массив файлов, используем одно и то же имя
           formData.append('achievements', uploadedFile.file);
-        } else {
-          // Остальные - одиночные файлы
-          formData.append(uploadedFile.fieldName, uploadedFile.file);
+        } else if (uploadedFile.fieldName === 'motivation_letter') {
+          formData.append('motivation_letter', uploadedFile.file);
+        } else if (uploadedFile.fieldName === 'grades_file') {
+          formData.append('grades_file', uploadedFile.file);
+        } else if (uploadedFile.fieldName === 'state_exam_file') {
+          formData.append('state_exam_file', uploadedFile.file);
+        } else if (uploadedFile.fieldName === 'official_grades_file') {
+          formData.append('official_grades_file', uploadedFile.file);
         }
       });
-
+  
+      console.log('Sending FormData with files:');
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value instanceof File ? value.name : value);
+      }
+  
       await applicantAPI.submitEnrollment(formData);
       setSuccess('Документы успешно отправлены!');
       setUploadedFiles([]);
       
-      // Автоматически скрыть сообщение об успехе через 5 секунд
       setTimeout(() => setSuccess(''), 5000);
     } catch (error: any) {
-      setError(error.response?.data?.detail || 'Ошибка отправки документов');
-      console.error('Failed to submit documents:', error);
+      console.error('Full error details:', error);
+      const errorMessage = error.response?.data?.detail || 
+                          error.response?.data?.message || 
+                          'Ошибка отправки документов';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
