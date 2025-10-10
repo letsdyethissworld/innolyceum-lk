@@ -13,9 +13,9 @@ interface RequestDetail {
   state_exam: string;
   official_grades_document: string;
   admin_note: string;
-  user?: {
+  user: {
     email: string;
-    profile?: {
+    profile: {
       first_name: string;
       last_name: string;
       state: string;
