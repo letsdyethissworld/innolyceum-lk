@@ -1,4 +1,4 @@
-FROM node:18-alpine as build
+FROM node:18-alpine as builder
 
 WORKDIR /app
 
@@ -15,14 +15,18 @@ COPY . .
 RUN npm run build
 
 # Production образ
-FROM nginx:alpine
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Устанавливаем serve для статических файлов
+RUN npm install -g serve
 
 # Копируем собранное приложение
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=builder /app/build ./build
 
-# Копируем nginx конфиг для SPA роутинга
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Указываем порт
+EXPOSE 3000
 
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Запускаем сервер
+CMD ["serve", "-s", "build", "-l", "3000"]
