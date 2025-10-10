@@ -183,12 +183,19 @@ const DocumentUpload: React.FC = () => {
       });
   
       console.log('Sending FormData with files:');
-      for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(key, value.name, value.size, value.type);
-        } else {
-          console.log(key, value);
-        }
+      try {
+        // Безопасный способ перебора FormData
+        const formDataEntries = Array.from(formData.entries());
+        formDataEntries.forEach(([key, value]) => {
+          // Проверяем, является ли value объектом File без использования instanceof
+          if (value && typeof value === 'object' && 'name' in value && 'size' in value && 'type' in value) {
+            console.log(`${key}:`, (value as any).name, `(${(value as any).size} bytes, ${(value as any).type})`);
+          } else {
+            console.log(`${key}:`, value);
+          }
+        });
+      } catch (logError) {
+        console.log('FormData contains files, but cannot log details due to environment restrictions');
       }
   
       await applicantAPI.submitEnrollment(formData);
