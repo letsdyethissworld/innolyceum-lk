@@ -70,7 +70,7 @@ const AdminRequestDetail: React.FC = () => {
 
   const downloadFile = async (filePath: string, fileName: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/admin/file?path=${encodeURIComponent(filePath)}`, {
+      const response = await fetch(`https://innolyceum-lk-back.up.railway.app/admin/file?path=${encodeURIComponent(filePath)}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         }
