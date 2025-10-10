@@ -1,0 +1,209 @@
+.container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+/* Header Styles */
+.header {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.headerContent {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.headerMain {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+}
+
+.headerTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.mobileMenuButton {
+  display: flex;
+  padding: 0.5rem;
+  border: none;
+  background: none;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 0.375rem;
+}
+
+.mobileMenuButton:hover {
+  background-color: #f3f4f6;
+}
+
+.userSection {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+.userSectionOpen {
+  display: flex;
+}
+
+.userEmail {
+  font-size: 0.875rem;
+  color: #6b7280;
+  word-break: break-all;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  width: fit-content;
+}
+
+.logoutButton:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+.logoutIcon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.logoutText {
+  display: none;
+}
+
+/* Navigation Styles */
+.nav {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 4rem;
+  z-index: 40;
+}
+
+.navContent {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.navLink:hover {
+  color: #374151;
+}
+
+.navLinkActive {
+  color: #2563eb;
+}
+
+.navIcon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+/* Main Content */
+.main {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  min-height: calc(100vh - 8rem);
+}
+
+/* Desktop Styles */
+@media (min-width: 768px) {
+  .headerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4rem;
+    padding: 0 1.5rem;
+  }
+
+  .headerMain {
+    flex: 1;
+  }
+
+  .mobileMenuButton {
+    display: none;
+  }
+
+  .userSection {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 0;
+    border: none;
+  }
+
+  .logoutText {
+    display: inline;
+  }
+
+  .navContent {
+    flex-direction: row;
+    gap: 2rem;
+    padding: 0 1.5rem;
+  }
+
+  .navLink {
+    border-bottom: 2px solid transparent;
+    padding: 1rem 0;
+  }
+
+  .navLinkActive {
+    border-bottom-color: #2563eb;
+  }
+
+  .main {
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile menu states */
+@media (max-width: 767px) {
+  .nav {
+    display: none;
+  }
+  
+  .navOpen {
+    display: block;
+  }
+}

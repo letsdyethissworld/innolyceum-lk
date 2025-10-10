@@ -1,0 +1,117 @@
+.container {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 2rem;
+}
+
+.statusCard {
+  composes: card from '../../styles/globals.css';
+  padding: 2rem;
+}
+
+.statusHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.statusTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.statusBadge {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.statusBadge.new {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.statusBadge.in_review {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.statusBadge.accepted {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.statusBadge.rejected {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.statusMessage {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+}
+
+.timeline {
+  space-y: 1.5rem;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+}
+
+.timelineItem:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 0.75rem;
+  top: 2rem;
+  bottom: -1.5rem;
+  width: 2px;
+  background-color: #e5e7eb;
+}
+
+.timelineItem.completed:not(:last-child)::after {
+  background-color: #10b981;
+}
+
+.timelineDot {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.timelineItem.completed .timelineDot {
+  background-color: #10b981;
+}
+
+.timelineContent {
+  flex: 1;
+  padding-bottom: 1.5rem;
+}
+
+.timelineContent h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem;
+}
+
+.timelineContent p {
+  color: #6b7280;
+  margin: 0;
+}
