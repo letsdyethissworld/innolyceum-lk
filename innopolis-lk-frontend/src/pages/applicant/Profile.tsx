@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { FormData } from '../../types';
+import { ApplicantFormData } from '../../types';
+import { applicantAPI } from '../../services/api';
+import regionsData from 'C:/Developer/2025/InnoHackathon/innopolis-lk-frontend/data/regions.json'
 import styles from './Profile.module.css';
 
-const regions = [
-  'Республика Татарстан',
-  'Москва',
-  'Санкт-Петербург',
-  'Новосибирская область',
-  'Свердловская область',
-  // ... другие регионы
-];
-
 const Profile: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ApplicantFormData>({
     lastName: '',
     firstName: '',
     middleName: '',
@@ -27,20 +20,42 @@ const Profile: React.FC = () => {
     parentsInfo: ''
   });
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    const savedData = localStorage.getItem('applicantProfile');
-    if (savedData) {
-      setFormData(JSON.parse(savedData));
-    }
+    loadProfile();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const loadProfile = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const profile = await applicantAPI.getProfile();
+      setFormData(profile);
+    } catch (error: any) {
+      setError('Ошибка загрузки профиля');
+      console.error('Failed to load profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    localStorage.setItem('applicantProfile', JSON.stringify(formData));
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await applicantAPI.updateProfile(formData);
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+    } catch (error: any) {
+      setError('Ошибка сохранения профиля');
+      console.error('Failed to save profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (
@@ -53,6 +68,10 @@ const Profile: React.FC = () => {
     }));
   };
 
+  if (isLoading && !formData.email) {
+    return <div className={styles.loading}>Загрузка...</div>;
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -60,6 +79,11 @@ const Profile: React.FC = () => {
         {isSaved && (
           <div className={styles.successMessage}>
             Данные успешно сохранены!
+          </div>
+        )}
+        {error && (
+          <div className={styles.errorMessage}>
+            {error}
           </div>
         )}
       </div>
@@ -75,6 +99,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.lastName}
               onChange={handleChange}
+              disabled={isLoading}
             />
           </div>
           
@@ -87,6 +112,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.firstName}
               onChange={handleChange}
+              disabled={isLoading}
             />
           </div>
           
@@ -98,6 +124,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.middleName}
               onChange={handleChange}
+              disabled={isLoading}
             />
           </div>
           
@@ -110,6 +137,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.birthDate}
               onChange={handleChange}
+              disabled={isLoading}
             />
           </div>
           
@@ -121,9 +149,10 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.region}
               onChange={handleChange}
+              disabled={isLoading}
             >
               <option value="">Выберите регион</option>
-              {regions.map(region => (
+              {regionsData.regions.map(region => (
                 <option key={region} value={region}>{region}</option>
               ))}
             </select>
@@ -138,6 +167,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.city}
               onChange={handleChange}
+              disabled={isLoading}
             />
           </div>
           
@@ -150,6 +180,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.school}
               onChange={handleChange}
+              disabled={isLoading}
             />
           </div>
           
@@ -161,6 +192,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.class}
               onChange={handleChange}
+              disabled={isLoading}
             >
               <option value="">Выберите класс</option>
               {[6,7,8,9,10].map(grade => (
@@ -178,6 +210,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.phone}
               onChange={handleChange}
+              disabled={isLoading}
             />
           </div>
           
@@ -190,6 +223,7 @@ const Profile: React.FC = () => {
               className={styles.input}
               value={formData.email}
               onChange={handleChange}
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -202,6 +236,7 @@ const Profile: React.FC = () => {
             className={styles.textarea}
             value={formData.address}
             onChange={handleChange}
+            disabled={isLoading}
           />
         </div>
         
@@ -213,12 +248,17 @@ const Profile: React.FC = () => {
             className={styles.textarea}
             value={formData.parentsInfo}
             onChange={handleChange}
+            disabled={isLoading}
           />
         </div>
         
         <div className={styles.actions}>
-          <button type="submit" className={styles.primaryButton}>
-            Сохранить данные
+          <button 
+            type="submit" 
+            className={styles.primaryButton}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Сохранение...' : 'Сохранить данные'}
           </button>
         </div>
       </form>

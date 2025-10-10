@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import styles from './Login.module.css'; // используем те же стили, что и для Login
+import styles from './Login.module.css';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -10,24 +10,32 @@ const Register: React.FC = () => {
     confirmPassword: ''
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   
-  const { login } = useAuth(); // пока используем login для простоты
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
+    setError('');
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Пароли не совпадают');
+      setError('Пароли не совпадают');
       return;
     }
+
+    if (formData.password.length < 6) {
+      setError('Пароль должен содержать минимум 6 символов');
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // В реальном приложении здесь был бы запрос на регистрацию
-      await login(formData.email, formData.password);
+      await register(formData.email, formData.password);
       navigate('/applicant');
-    } catch (error) {
-      alert('Ошибка регистрации');
+    } catch (error: any) {
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -48,6 +56,12 @@ const Register: React.FC = () => {
           <h2 className={styles.title}>Регистрация</h2>
           <p className={styles.subtitle}>Лицей Иннополис</p>
         </div>
+        
+        {error && (
+          <div className={styles.errorMessage}>
+            {error}
+          </div>
+        )}
         
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.formGroup}>

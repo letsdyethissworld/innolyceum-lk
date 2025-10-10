@@ -9,19 +9,21 @@ const Login: React.FC = () => {
     password: ''
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
+    setError('');
     setIsLoading(true);
     
     try {
       await login(formData.email, formData.password);
       navigate('/applicant');
-    } catch (error) {
-      alert('Ошибка входа. Проверьте email и пароль.');
+    } catch (error: any) {
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -42,6 +44,12 @@ const Login: React.FC = () => {
           <h2 className={styles.title}>Вход в личный кабинет</h2>
           <p className={styles.subtitle}>Лицей Иннополис</p>
         </div>
+        
+        {error && (
+          <div className={styles.errorMessage}>
+            {error}
+          </div>
+        )}
         
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.formGroup}>

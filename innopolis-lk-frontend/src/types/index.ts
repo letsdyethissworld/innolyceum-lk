@@ -15,7 +15,7 @@ export interface Applicant {
   region: string;
   city: string;
   school: string;
-  class: number;
+  class: string;
   phone: string;
   email: string;
   address?: string;
@@ -29,8 +29,8 @@ export interface Document {
   id: string;
   applicantId: string;
   documentType: 'achievements' | 'motivation' | 'grades' | 'oge' | 'certificate';
-  filePath: string;
   fileName: string;
+  filePath: string;
   fileSize: number;
   uploadedAt: string;
 }
@@ -38,10 +38,11 @@ export interface Document {
 export interface AuthContextType {
   currentUser: User | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  register: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-export interface FormData {
+export interface ApplicantFormData {
   lastName: string;
   firstName: string;
   middleName: string;
