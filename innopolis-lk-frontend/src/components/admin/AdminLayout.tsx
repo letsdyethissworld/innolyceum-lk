@@ -54,18 +54,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               Админ панель
             </Link>
             
-            {isMobileView && (
-              <button 
-                className={styles.mobileMenuButton}
-                onClick={toggleMobileMenu}
-                aria-label={isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            )}
+            <button 
+              className={styles.mobileMenuButton}
+              onClick={toggleMobileMenu}
+              aria-label={isMobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
           
-          <div className={`${styles.userSection} ${isMobileMenuOpen && isMobileView ? styles.userSectionOpen : ''}`}>
+          <div className={styles.userSection}>
             <span className={styles.userEmail}>
               {localStorage.getItem('adminEmail') || 'Администратор'}
             </span>
@@ -74,7 +72,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               className={styles.logoutButton}
             >
               <LogOut className={styles.logoutIcon} />
-              <span>Выйти</span>
+              <span className={styles.logoutText}>Выйти</span>
             </button>
           </div>
         </div>
@@ -103,28 +101,47 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </nav>
       )}
 
-      {/* Мобильное меню */}
+      {/* Мобильное меню - показываем навигационные ссылки */}
       {isMobileView && isMobileMenuOpen && (
-        <nav className={styles.mobileNav}>
-          <div className={styles.mobileNavContent}>
-            {adminMenu.map(item => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`}
-                  onClick={closeMobileMenu}
-                >
-                  <Icon className={styles.navIcon} />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+        <div className={styles.mobileMenuOverlay}>
+          <div className={styles.mobileMenuContent}>
+            {/* Навигационные ссылки */}
+            <div className={styles.mobileNavSection}>
+              {adminMenu.map(item => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
+                
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`}
+                    onClick={closeMobileMenu}
+                  >
+                    <Icon className={styles.navIcon} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+            
+            {/* Информация пользователя и выход */}
+            <div className={styles.mobileUserSection}>
+              <div className={styles.mobileUserInfo}>
+                <span className={styles.mobileUserEmail}>
+                  {localStorage.getItem('adminEmail') || 'Администратор'}
+                </span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className={styles.mobileLogoutButton}
+              >
+                <LogOut className={styles.logoutIcon} />
+                <span>Выйти из аккаунта</span>
+              </button>
+            </div>
           </div>
-        </nav>
+        </div>
       )}
 
       <main className={styles.main}>
