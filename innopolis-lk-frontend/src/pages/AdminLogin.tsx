@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { adminAPI } from '../services/api';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'; // Импортируем useAuth
 import styles from './Login.module.css';
 
 const AdminLogin: React.FC = () => {
@@ -12,14 +12,19 @@ const AdminLogin: React.FC = () => {
   const [error, setError] = useState('');
   
   const navigate = useNavigate();
+  const location = useLocation();
+  const { adminLogin } = useAuth(); // Используем метод из контекста
+
+  // Получаем откуда пришел пользователь, или по умолчанию '/admin'
+  const from = location.state?.from?.pathname || '/admin';
 
   useEffect(() => {
     // Если уже есть admin token, перенаправляем в админку
     const adminToken = localStorage.getItem('adminToken');
     if (adminToken) {
-      navigate('/admin', { replace: true });
+      navigate(from, { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,11 +32,12 @@ const AdminLogin: React.FC = () => {
     setIsLoading(true);
     
     try {
-      await adminAPI.login(formData.email, formData.password);
-      // Перенаправляем на предыдущую страницу или на /admin по умолчанию
-      navigate(from, { replace: true });
+      // Используем метод adminLogin из контекста аутентификации
+      await adminLogin(formData.email, formData.password);
+      // Перенаправление происходит внутри adminLogin через window.location.href
+      // Поэтому здесь navigate не нужен
     } catch (error: any) {
-      setError(error.response?.data?.detail || 'Ошибка входа');
+      setError(error.message || 'Ошибка входа');
     } finally {
       setIsLoading(false);
     }
