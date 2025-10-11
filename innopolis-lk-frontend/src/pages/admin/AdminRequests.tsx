@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
+import regionsData from '../../../data/regions.json'; // Импортируем регионы
 import styles from './AdminRequests.module.css';
 
 interface Request {
@@ -27,7 +28,7 @@ const AdminRequests: React.FC = () => {
   const [filters, setFilters] = useState({
     status: '',
     state: '',
-    class_number: ''  // Добавляем фильтр по классу
+    class_number: ''
   });
 
   useEffect(() => {
@@ -36,7 +37,6 @@ const AdminRequests: React.FC = () => {
 
   const loadRequests = async () => {
     try {
-      // Преобразуем class_number в число, если он есть
       const apiFilters = {
         ...filters,
         class_number: filters.class_number ? parseInt(filters.class_number) : undefined
@@ -54,7 +54,7 @@ const AdminRequests: React.FC = () => {
   const handleStatusChange = async (requestId: number, newStatus: string) => {
     try {
       await adminAPI.updateApplicationStatus(requestId, newStatus);
-      loadRequests(); // Перезагружаем список
+      loadRequests();
     } catch (error: any) {
       setError('Ошибка обновления статуса');
     }
@@ -84,6 +84,7 @@ const AdminRequests: React.FC = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Управление заявками</h1>
         <div className={styles.filters}>
+          {/* Фильтр по статусу */}
           <select 
             value={filters.status}
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
@@ -95,15 +96,19 @@ const AdminRequests: React.FC = () => {
             <option value="denied">Отклонено</option>
           </select>
           
-          <input
-            type="text"
-            placeholder="Фильтр по региону"
+          {/* Фильтр по региону - теперь выпадающий список */}
+          <select 
             value={filters.state}
             onChange={(e) => setFilters(prev => ({ ...prev, state: e.target.value }))}
             className={styles.filter}
-          />
+          >
+            <option value="">Все регионы</option>
+            {regionsData.regions.map(region => (
+              <option key={region} value={region}>{region}</option>
+            ))}
+          </select>
 
-          {/* Добавляем фильтр по классу */}
+          {/* Фильтр по классу */}
           <select 
             value={filters.class_number}
             onChange={(e) => setFilters(prev => ({ ...prev, class_number: e.target.value }))}
@@ -116,12 +121,25 @@ const AdminRequests: React.FC = () => {
             <option value="9">9 класс</option>
             <option value="10">10 класс</option>
           </select>
+
+          {/* Кнопка сброса фильтров */}
+          <button
+            onClick={() => setFilters({ status: '', state: '', class_number: '' })}
+            className={styles.resetButton}
+          >
+            Сбросить
+          </button>
         </div>
       </div>
 
       <div className={styles.requestsList}>
         {requests.length === 0 ? (
-          <div className={styles.empty}>Нет заявок</div>
+          <div className={styles.empty}>
+            {filters.status || filters.state || filters.class_number 
+              ? 'Заявки по выбранным фильтрам не найдены' 
+              : 'Нет заявок'
+            }
+          </div>
         ) : (
           requests.map(request => (
             <div key={request.id} className={styles.requestCard}>
