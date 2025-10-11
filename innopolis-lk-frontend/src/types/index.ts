@@ -38,6 +38,7 @@ export interface Document {
 export interface AuthContextType {
   currentUser: User | null;
   login: (email: string, password: string) => Promise<void>;
+  adminLogin: (email: string, password: string) => Promise<void>; // Добавьте эту строку
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
