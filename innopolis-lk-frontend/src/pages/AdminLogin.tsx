@@ -17,7 +17,7 @@ const AdminLogin: React.FC = () => {
     // Если уже есть admin token, перенаправляем в админку
     const adminToken = localStorage.getItem('adminToken');
     if (adminToken) {
-      navigate('/admin');
+      navigate('/admin', { replace: true });
     }
   }, [navigate]);
 
@@ -28,7 +28,8 @@ const AdminLogin: React.FC = () => {
     
     try {
       await adminAPI.login(formData.email, formData.password);
-      navigate('/admin');
+      // Явное перенаправление на /admin
+      navigate('/admin', { replace: true });
     } catch (error: any) {
       setError(error.response?.data?.detail || 'Ошибка входа');
     } finally {
