@@ -16,7 +16,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const applicantMenu = [
-    { path: '/applicant', icon: User, label: 'Профиль' },
+    { path: '/applicant/profile', icon: User, label: 'Профиль' },
     { path: '/applicant/documents', icon: FileText, label: 'Документы' },
     { path: '/applicant/status', icon: BarChart3, label: 'Статус заявки' }
   ];
