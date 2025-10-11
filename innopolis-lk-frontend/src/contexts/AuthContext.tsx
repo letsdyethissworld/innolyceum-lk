@@ -82,8 +82,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const adminLogin = async (email: string, password: string): Promise<void> => {
+   const adminLogin = async (email: string, password: string): Promise<void> => {
     try {
+      // Очищаем предыдущие токены перед новым входом
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminEmail');
+
       const response = await adminAPI.login(email, password);
       
       const user: User = {
@@ -97,10 +102,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('adminEmail', email);
       setCurrentUser(user);
       
-      // Добавьте явное перенаправление
-      window.location.href = '/admin'; // Или используйте navigate если доступен
+      // Перенаправление на админ-панель
+      window.location.href = '/admin';
     } catch (error: any) {
-      throw new Error(error.response?.data?.detail || 'Ошибка входа администратора');
+      const errorMessage = error.response?.data?.detail || 
+                          error.response?.data?.message || 
+                          error.message || 
+                          'Ошибка входа администратора';
+      console.error('Admin login error:', error);
+      throw new Error(errorMessage);
     }
   };
 
