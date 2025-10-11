@@ -23,6 +23,7 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .filter {
@@ -32,12 +33,57 @@
   font-size: 0.9rem;
   background: white;
   min-width: 150px;
+  color: #2d3748; /* Темный цвет текста */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none; /* Убираем стандартный стиль браузера */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a5568'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
 }
 
 .filter:focus {
   outline: none;
   border-color: #4299e1;
   box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.filter:hover {
+  border-color: #cbd5e0;
+}
+
+/* Стили для option */
+.filter option {
+  color: #2d3748;
+  background: white;
+  padding: 0.5rem;
+}
+
+.filter option:checked {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+/* Кнопка сброса */
+.resetButton {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #f7fafc;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.resetButton:hover {
+  background: #edf2f7;
+  border-color: #cbd5e0;
+  color: #2d3748;
 }
 
 .requestsList {
@@ -243,6 +289,11 @@
 
   .filter {
     min-width: auto;
+    width: 100%;
+  }
+
+  .resetButton {
+    width: 100%;
   }
 
   .requestInfo {
@@ -256,5 +307,12 @@
 
   .statusActions {
     justify-content: center;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+  .filter {
+    font-size: 16px; /* Предотвращает zoom в iOS */
   }
 }
