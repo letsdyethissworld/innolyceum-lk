@@ -82,6 +82,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const adminLogin = async (email: string, password: string): Promise<void> => {
+    try {
+      const response = await adminAPI.login(email, password);
+      
+      const user: User = {
+        id: 'admin',
+        email: email,
+        role: 'admin',
+        createdAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('adminToken', response.access_token);
+      localStorage.setItem('adminEmail', email);
+      setCurrentUser(user);
+      
+      // Добавьте явное перенаправление
+      window.location.href = '/admin'; // Или используйте navigate если доступен
+    } catch (error: any) {
+      throw new Error(error.response?.data?.detail || 'Ошибка входа администратора');
+    }
+  };
+
   const register = async (email: string, password: string): Promise<void> => {
     try {
       const response = await authAPI.register(email, password);
