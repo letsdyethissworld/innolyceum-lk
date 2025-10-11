@@ -28,17 +28,21 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('currentUser');
-      window.location.href = '/login';
+      const requestUrl = error.config?.url || '';
+      
+      // Для админских запросов перенаправляем на /admin/login
+      if (requestUrl.includes('/admin')) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminEmail');
+        window.location.href = '/admin/login';
+      } else {
+        // Для обычных пользователей перенаправляем на /login
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('currentUser');
+        window.location.href = '/login';
+      }
     }
-    
-    // Детальное логирование ошибок 422
-    if (error.response?.status === 422) {
-      console.error('Validation Error Details:', error.response.data);
-    }
-    
     return Promise.reject(error);
   }
 );
