@@ -45,6 +45,30 @@ const Profile: React.FC = () => {
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
+    const handleResize = () => {
+      // Принудительно обновляем компонент при изменении размера окна
+      setFormData(prev => ({ ...prev }));
+    };
+  
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // В JSX добавьте класс для очень длинных текстов
+  <div className={styles.formGroup}>
+    <label className={styles.label}>Адрес регистрации</label>
+    <textarea
+      name="address"
+      rows={3}
+      className={styles.textarea}
+      value={formData.address}
+      onChange={handleChange}
+      disabled={isLoading}
+      maxLength={500} // Ограничение длины
+    />
+  </div>
+  
+  useEffect(() => {
     loadProfile();
   }, []);
 
