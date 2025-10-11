@@ -27,9 +27,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerMain}>
-            <h1 className={styles.headerTitle}>
-              Личный кабинет поступающего
-            </h1>
+            <Link to="/applicant" className={styles.logo}>
+              <h1 className={styles.logoText}>Лицей Иннополис</h1>
+            </Link>
             
             {/* Mobile menu button */}
             <button 
