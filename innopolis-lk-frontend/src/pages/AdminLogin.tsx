@@ -28,8 +28,8 @@ const AdminLogin: React.FC = () => {
     
     try {
       await adminAPI.login(formData.email, formData.password);
-      // Явное перенаправление на /admin
-      navigate('/admin', { replace: true });
+      // Перенаправляем на предыдущую страницу или на /admin по умолчанию
+      navigate(from, { replace: true });
     } catch (error: any) {
       setError(error.response?.data?.detail || 'Ошибка входа');
     } finally {
