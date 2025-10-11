@@ -1,19 +1,17 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom';
 
 interface AdminRouteProps {
   children: React.ReactNode;
 }
 
 const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
-  const { currentUser } = useAuth();
-
-  // Проверяем что пользователь авторизован как admin
+  const location = useLocation();
   const adminToken = localStorage.getItem('adminToken');
-  
-  if (!adminToken || !currentUser) {
-    return <Navigate to="/admin/login" replace />;
+
+  if (!adminToken) {
+    // Перенаправляем на /admin/login с сохранением текущего пути для возврата
+    return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
