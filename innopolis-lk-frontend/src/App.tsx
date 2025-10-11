@@ -17,8 +17,7 @@ import Profile from './pages/applicant/Profile';
 import DocumentUpload from './components/documentupload/DocumentUpload';
 import Status from './pages/applicant/Status';
 import ProtectedRoute from './components/protectedroute/ProtectedRoute';
-import ApplicantRoute from './components/applicantroute/ApplicantRoute';
-import AdminRoute from './components/AdminRoute';
+import AdminRoute from './components/AdminRoute'; // Новый импорт
 import './styles/globals.css';
 
 const App: React.FC = () => {
@@ -36,61 +35,45 @@ const App: React.FC = () => {
           {/* Applicant routes */}
           <Route path="/applicant" element={
             <ProtectedRoute>
-              <ApplicantRoute>
-                <Layout><ApplicantDashboard /></Layout>
-              </ApplicantRoute>
+              <Layout><ApplicantDashboard /></Layout>
             </ProtectedRoute>
           } />
           <Route path="/applicant/profile" element={
             <ProtectedRoute>
-              <ApplicantRoute>
-                <Layout><Profile /></Layout>
-              </ApplicantRoute>
+              <Layout><Profile /></Layout>
             </ProtectedRoute>
           } />
           <Route path="/applicant/documents" element={
             <ProtectedRoute>
-              <ApplicantRoute>
-                <Layout><DocumentUpload /></Layout>
-              </ApplicantRoute>
+              <Layout><DocumentUpload /></Layout>
             </ProtectedRoute>
           } />
           <Route path="/applicant/status" element={
             <ProtectedRoute>
-              <ApplicantRoute>
-                <Layout><Status /></Layout>
-              </ApplicantRoute>
+              <Layout><Status /></Layout>
             </ProtectedRoute>
           } />
           
-          {/* Admin routes */}
+          {/* Admin routes - используем AdminRoute вместо ProtectedRoute */}
           <Route path="/admin" element={
-            <ProtectedRoute>
-              <AdminRoute>
-                <AdminLayout><AdminDashboard /></AdminLayout>
-              </AdminRoute>
-            </ProtectedRoute>
+            <AdminRoute>
+              <AdminLayout><AdminDashboard /></AdminLayout>
+            </AdminRoute>
           } />
           <Route path="/admin/requests" element={
-            <ProtectedRoute>
-              <AdminRoute>
-                <AdminLayout><AdminRequests /></AdminLayout>
-              </AdminRoute>
-            </ProtectedRoute>
+            <AdminRoute>
+              <AdminLayout><AdminRequests /></AdminLayout>
+            </AdminRoute>
           } />
           <Route path="/admin/requests/:id" element={
-            <ProtectedRoute>
-              <AdminRoute>
-                <AdminLayout><AdminRequestDetail /></AdminLayout>
-              </AdminRoute>
-            </ProtectedRoute>
+            <AdminRoute>
+              <AdminLayout><AdminRequestDetail /></AdminLayout>
+            </AdminRoute>
           } />
           <Route path="/admin/files" element={
-            <ProtectedRoute>
-              <AdminRoute>
-                <AdminLayout><AdminFiles /></AdminLayout>
-              </AdminRoute>
-            </ProtectedRoute>
+            <AdminRoute>
+              <AdminLayout><AdminFiles /></AdminLayout>
+            </AdminRoute>
           } />
           
           {/* Redirects */}
