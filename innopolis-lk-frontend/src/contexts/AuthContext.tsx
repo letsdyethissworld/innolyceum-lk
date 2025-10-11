@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthContextType } from '../types';
-import { authAPI } from '../services/api';
+import { authAPI, adminAPI } from '../services/api'; // Добавьте adminAPI в импорт
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -30,15 +30,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const adminToken = localStorage.getItem('adminToken');
       
       if (token) {
-        // Проверяем токен через бэкенд
         try {
-          // Создаем временный api instance без interceptor чтобы избежать рекурсии
-          const tempApi = authAPI;
-          // Если бэкенд имеет эндпоинт для проверки пользователя, используем его
-          // Пока просто считаем, что токен валиден если есть
           const user: User = {
             id: 'temp',
-            email: 'user@example.com', // В реальном приложении получаем из токена или API
+            email: 'user@example.com',
             role: 'applicant',
             createdAt: new Date().toISOString()
           };
@@ -50,7 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else if (adminToken) {
         const user: User = {
           id: 'admin',
-          email: 'admin@example.com',
+          email: localStorage.getItem('adminEmail') || 'admin@example.com',
           role: 'admin',
           createdAt: new Date().toISOString()
         };
@@ -82,7 +77,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-   const adminLogin = async (email: string, password: string): Promise<void> => {
+  // ДОБАВЛЯЕМ МЕТОД adminLogin
+  const adminLogin = async (email: string, password: string): Promise<void> => {
     try {
       // Очищаем предыдущие токены перед новым входом
       localStorage.removeItem('authToken');
@@ -140,6 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       localStorage.removeItem('authToken');
       localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminEmail');
       localStorage.removeItem('currentUser');
       setCurrentUser(null);
     }
@@ -148,7 +145,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     currentUser,
     login,
-    adminLogin,
+    adminLogin, // ДОБАВЛЯЕМ В КОНТЕКСТ
     register,
     logout
   };
