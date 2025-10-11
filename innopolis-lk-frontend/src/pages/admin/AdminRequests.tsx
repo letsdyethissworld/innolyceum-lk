@@ -26,7 +26,8 @@ const AdminRequests: React.FC = () => {
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({
     status: '',
-    state: ''
+    state: '',
+    class_number: ''  // Добавляем фильтр по классу
   });
 
   useEffect(() => {
@@ -35,7 +36,13 @@ const AdminRequests: React.FC = () => {
 
   const loadRequests = async () => {
     try {
-      const requestsData = await adminAPI.getApplications(filters);
+      // Преобразуем class_number в число, если он есть
+      const apiFilters = {
+        ...filters,
+        class_number: filters.class_number ? parseInt(filters.class_number) : undefined
+      };
+      
+      const requestsData = await adminAPI.getApplications(apiFilters);
       setRequests(requestsData);
     } catch (error: any) {
       setError('Ошибка загрузки заявок');
@@ -95,6 +102,20 @@ const AdminRequests: React.FC = () => {
             onChange={(e) => setFilters(prev => ({ ...prev, state: e.target.value }))}
             className={styles.filter}
           />
+
+          {/* Добавляем фильтр по классу */}
+          <select 
+            value={filters.class_number}
+            onChange={(e) => setFilters(prev => ({ ...prev, class_number: e.target.value }))}
+            className={styles.filter}
+          >
+            <option value="">Все классы</option>
+            <option value="6">6 класс</option>
+            <option value="7">7 класс</option>
+            <option value="8">8 класс</option>
+            <option value="9">9 класс</option>
+            <option value="10">10 класс</option>
+          </select>
         </div>
       </div>
 
@@ -116,13 +137,22 @@ const AdminRequests: React.FC = () => {
                   <strong>ФИО:</strong> {request.profile?.first_name} {request.profile?.last_name}
                 </div>
                 <div className={styles.infoItem}>
+                  <strong>Email:</strong> {request.user_email}
+                </div>
+                <div className={styles.infoItem}>
                   <strong>Регион:</strong> {request.profile?.state}
+                </div>
+                <div className={styles.infoItem}>
+                  <strong>Город:</strong> {request.profile?.city}
+                </div>
+                <div className={styles.infoItem}>
+                  <strong>Школа:</strong> {request.profile?.school}
                 </div>
                 <div className={styles.infoItem}>
                   <strong>Класс:</strong> {request.profile?.class_number}
                 </div>
                 <div className={styles.infoItem}>
-                  <strong>Дата подачи:</strong> {new Date(request.created_at).toLocaleDateString('ru-RU')}
+                  <strong>Телефон:</strong> {request.profile?.contact_number}
                 </div>
               </div>
 
