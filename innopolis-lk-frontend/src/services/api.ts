@@ -207,7 +207,13 @@ export const adminAPI = {
 
   // Maps to FastAPI /admin/requests
   getApplications: async (filters?: any) => {
-    const response = await api.get('/admin/requests', { params: filters });
+    const response = await api.get('/admin/requests', { 
+      params: {
+        status: filters?.status,
+        state: filters?.state,
+        class_number: filters?.class_number  // Добавляем параметр класса
+      }
+    });
     return response.data;
   },
 
